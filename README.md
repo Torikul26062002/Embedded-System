@@ -1,146 +1,168 @@
-# Arduino Traffic Light System with Pedestrian Crossing
+# Embedded Systems — Arduino Projects
 
 ## Project Overview
 
-This project implements a traffic light control system with a pedestrian crossing feature using an **Arduino Uno**.
+Welcome to my **Embedded Systems** repository!
 
-The system simulates a real-world traffic intersection where vehicles follow a traffic light sequence and pedestrians can request permission to cross by pressing a push button.
+This repository contains practical embedded systems projects developed using the **Arduino Uno microcontroller**, C/C++, and electronic components.
 
-The program uses a **finite state machine (FSM)** and the Arduino `millis()` function to manage the traffic light sequence without relying on blocking delays.
+The projects focus on microcontroller programming, LED control, traffic light systems, pedestrian crossing systems, finite state machines, and hardware-software integration.
 
-## Hardware Components
+Each task demonstrates different concepts of embedded systems programming, supported by source code, simulations, and technical documentation.
 
-- Arduino Uno
-- Breadboard
-- 3 LEDs for vehicle traffic (Red, Yellow, Green)
-- 2 LEDs for pedestrian traffic (Red, Green)
-- Push button
-- Current-limiting resistors for the LEDs (e.g., 220 Ω)
-- Jumper wires
-- USB cable for programming the Arduino
-
-## Pin Configuration
-
-| Component | Arduino Pin |
-|---|---|
-| Vehicle Red LED | 13 |
-| Vehicle Yellow LED | 12 |
-| Vehicle Green LED | 11 |
-| Pedestrian Red LED | 10 |
-| Pedestrian Green LED | 9 |
-| Pedestrian Push Button | 2 |
-
-The push button uses Arduino's internal pull-up resistor (`INPUT_PULLUP`). The button is connected between digital pin 2 and GND.
-
-## Working Principle
-
-### 1. Normal Traffic Operation
-
-- The vehicle green light is ON.
-- The pedestrian red light is ON.
-- Vehicles are allowed to move while pedestrians must wait.
-
-### 2. Pedestrian Request
-
-- A pedestrian presses the push button.
-- The Arduino detects the button press.
-- The request is stored in a Boolean variable.
-- Software debouncing helps prevent false button detections.
-
-### 3. Vehicle Yellow Phase
-
-- The vehicle green light turns OFF.
-- The vehicle yellow light turns ON.
-- Drivers are warned to prepare to stop.
-
-### 4. Vehicle Red Phase
-
-- The vehicle yellow light turns OFF.
-- The vehicle red light turns ON.
-- Vehicles must stop before pedestrians are allowed to cross.
-
-### 5. Pedestrian Crossing
-
-- The pedestrian red light turns OFF.
-- The pedestrian green light turns ON.
-- Pedestrians are allowed to cross while vehicles remain stopped.
-
-### 6. Return to Normal Operation
-
-- The pedestrian green light turns OFF.
-- The pedestrian red light turns ON.
-- The vehicle green light turns ON.
-- The system returns to its initial state and waits for another pedestrian request.
-
-## Software Design
-
-The project uses a finite state machine with four states:
-
-```cpp
-enum TrafficState {
-  CAR_GREEN_WAIT,
-  CAR_YELLOW_PHASE,
-  CAR_RED_PHASE,
-  PEDESTRIAN_CROSSING
-};
-```
-
-Each state represents a specific operating phase of the traffic light system.
-
-### Non-Blocking Timing
-
-The program uses `millis()` to measure elapsed time instead of using `delay()`.
-
-This allows the Arduino to continue checking the push button while managing the traffic light sequence.
-
-### Button Debouncing
-
-A debounce interval of 30 milliseconds is used to filter mechanical button bouncing.
-
-### Pedestrian Request Handling
-
-A Boolean variable stores the pedestrian request so the program can process it through the traffic light sequence.
-
-## Project Files
-
-| File | Description |
-|---|---|
-| `traffic_light.ino` | Arduino source code |
-| `Traffic_light_pedestrian_class_diagram.png` | Project class diagram |
-| `A fraffic light system with padestrian light.png` | Traffic light system illustration |
-
-## How to Run the Project
-
-1. Install the Arduino IDE.
-2. Connect the Arduino Uno to your computer using a USB cable.
-3. Connect the LEDs, resistors, and push button to the breadboard according to the pin configuration.
-4. Open `traffic_light.ino` in Arduino IDE.
-5. Select **Arduino Uno** under Tools → Board.
-6. Select the correct port under Tools → Port.
-7. Click **Verify** to compile the program.
-8. Click **Upload** to transfer the program to the Arduino.
-9. Press the pedestrian push button to test the traffic light sequence.
-
-## Learning Outcomes
-
-This project demonstrates:
-
-- Arduino digital input and output
-- LED control
-- Push-button input handling
-- Internal pull-up resistors
-- Software button debouncing
-- Finite state machine programming
-- Non-blocking timing using `millis()`
-- Basic embedded-system control logic
-
-## Safety Note
-
-This project is an educational traffic light simulation and is not intended for use in real road traffic control systems.
-
-## Development Environment
+## Technologies and Tools
 
 - **Microcontroller:** Arduino Uno
-- **Programming Language:** Arduino C/C++
-- **Development Software:** Arduino IDE
+- **Programming Language:** Embedded C/C++ (Arduino)
+- **Development Environment:** Arduino IDE
+- **Simulation Tools:** Wokwi / Tinkercad Circuits
+- **Hardware:** Breadboard, LEDs, resistors, push buttons, jumper wires
+- **System Modeling:** UML class, state machine, and sequence diagrams
 - **Version Control:** Git and GitHub
+
+## Repository Structure
+
+```text
+Embedded-System/
+│
+├── Task 1/
+│   └── Basic Traffic Light System
+│
+├── Task 2/
+│   └── Traffic Light with Pedestrian Crossing
+│
+├── Task 3/
+│   ├── Task_03_LED_Blinking.ino
+│   └── Task_03_LED_Blinking_Demo.mp4
+│
+├── Task 4/
+│   ├── Task_04_Traffic_Light_Controller.ino
+│   └── Traffic Light Demo Link (.md)
+│
+└── README.md
+```
+
+## Project Descriptions
+
+### Task 1 — Basic Traffic Light System
+
+This project implements a basic traffic light controller using an Arduino Uno and three LEDs.
+
+**Features:**
+- Red, yellow, and green LED control
+- Automatic traffic light switching
+- Time-based state transitions
+- Finite state machine implementation
+- UML modeling and circuit simulation
+
+### Task 2 — Traffic Light with Pedestrian Crossing
+
+This project extends Task 1 by introducing a pedestrian crossing system with a push button.
+
+**Features:**
+- Car traffic lights (red, yellow, green)
+- Pedestrian traffic lights (red, green)
+- Pedestrian push-button detection
+- Button debouncing
+- Request-based pedestrian crossing
+- Six-state traffic light controller
+- Two all-red safety phases
+- Timing control using `millis()`
+- UML state machine and sequence diagrams
+
+The system ensures that car and pedestrian green lights are not activated simultaneously.
+
+### Task 3 — Arduino LED Blinking
+
+This project demonstrates basic LED blinking using an Arduino Uno.
+
+**Features:**
+- Digital output pin configuration
+- LED ON/OFF control
+- Sequential LED blinking
+- Timing using `delay()`
+- Practical Arduino demonstration
+
+**Files:**
+- `Task_03_LED_Blinking.ino` — Arduino source code
+- `Task_03_LED_Blinking_Demo.mp4` — Demonstration video
+
+**Learning Objective:**
+
+Understand how Arduino controls digital outputs and how LEDs can be switched using simple programming instructions.
+
+### Task 4 — Traffic Light Controller
+
+This project demonstrates an Arduino-based traffic light controller.
+
+**Features:**
+- Traffic light control using Arduino
+- LED switching logic
+- Time-based light transitions
+- Embedded system simulation
+- Demonstration link for project testing
+
+**Files:**
+- `Task_04_Traffic_Light_Controller.ino` — Arduino source code
+- Markdown file containing the traffic light demonstration link
+
+**Learning Objective:**
+
+Develop practical experience implementing and testing traffic light control logic using an Arduino microcontroller.
+
+## Key Learning Outcomes
+
+Through these projects, I am developing skills in:
+
+1. Arduino Uno programming
+2. Embedded C/C++
+3. Digital input and output (GPIO)
+4. LED control and timing
+5. Finite state machines
+6. `switch-case` programming
+7. Non-blocking timing with `millis()`
+8. Push-button interfacing and debouncing
+9. UML modeling
+10. Circuit simulation and debugging
+11. GitHub version control and documentation
+
+## How to Run the Projects
+
+1. Install the Arduino IDE or open Wokwi/Tinkercad.
+2. Open the desired task folder.
+3. Download or open the corresponding `.ino` file.
+4. Connect the Arduino Uno and required components.
+5. Select Arduino Uno as the target board.
+6. Compile and upload the code or start the simulation.
+7. Observe the LED behavior and verify the expected results.
+
+## Project Documentation
+
+The repository contains Arduino source code and supporting materials, including:
+
+- UML diagrams
+- State machine diagrams
+- Sequence diagrams
+- Circuit designs
+- Simulation demonstrations
+- Task-specific documentation
+
+## Future Improvements
+
+Possible future extensions include:
+
+- Sensor-based traffic light control
+- Interrupt-based button handling
+- Additional pedestrian crossing features
+- More advanced finite state machines
+- Improved simulation and testing
+
+## Conclusion
+
+These projects demonstrate fundamental concepts of embedded systems development through practical Arduino applications.
+
+The repository documents my progress in microcontroller programming, circuit implementation, system modeling, and hardware-software integration.
+
+---
+
+**Embedded Systems | Arduino Uno | C/C++ | Traffic Light Control | UML | Circuit Simulation**
