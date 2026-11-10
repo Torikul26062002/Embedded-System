@@ -8,6 +8,13 @@ const int pedGreen = 9;
 
 const int pedButton = 2;
 
+// Timing in milliseconds
+const unsigned long greenTime = 10000;
+const unsigned long yellowTime = 3000;
+const unsigned long redTime = 5000;
+const unsigned long crossingTime = 5000;
+
+// Traffic states
 enum TrafficState {
   CAR_GREEN_WAIT,
   CAR_YELLOW_PHASE,
@@ -36,13 +43,21 @@ void setup() {
 
   pinMode(pedButton, INPUT_PULLUP);
 
+  // Initial state: Cars green, pedestrians red
+  digitalWrite(carRed, LOW);
+  digitalWrite(carYellow, LOW);
+  digitalWrite(carGreen, HIGH);
+
+  digitalWrite(pedRed, HIGH);
+  digitalWrite(pedGreen, LOW);
+
   previousMillis = millis();
 }
 
 void loop() {
   unsigned long currentMillis = millis();
 
-  // Detect a new button press
+  // Detect button press with debounce
   bool reading = digitalRead(pedButton);
 
   if (reading != lastButtonReading) {
@@ -64,40 +79,46 @@ void loop() {
 
   switch (currentState) {
 
+    // State 0: Cars green for at least 10 seconds
     case CAR_GREEN_WAIT:
-      digitalWrite(carGreen, HIGH);
-      digitalWrite(carYellow, LOW);
       digitalWrite(carRed, LOW);
-      digitalWrite(pedGreen, LOW);
-      digitalWrite(pedRed, HIGH);
+      digitalWrite(carYellow, LOW);
+      digitalWrite(carGreen, HIGH);
 
-      if (currentMillis - previousMillis >= 5000) {
+      digitalWrite(pedRed, HIGH);
+      digitalWrite(pedGreen, LOW);
+
+      if (currentMillis - previousMillis >= greenTime) {
         previousMillis = currentMillis;
         currentState = CAR_YELLOW_PHASE;
       }
       break;
 
+    // State 1: Cars yellow for 3 seconds
     case CAR_YELLOW_PHASE:
-      digitalWrite(carGreen, LOW);
-      digitalWrite(carYellow, HIGH);
       digitalWrite(carRed, LOW);
-      digitalWrite(pedGreen, LOW);
-      digitalWrite(pedRed, HIGH);
+      digitalWrite(carYellow, HIGH);
+      digitalWrite(carGreen, LOW);
 
-      if (currentMillis - previousMillis >= 2000) {
+      digitalWrite(pedRed, HIGH);
+      digitalWrite(pedGreen, LOW);
+
+      if (currentMillis - previousMillis >= yellowTime) {
         previousMillis = currentMillis;
         currentState = CAR_RED_PHASE;
       }
       break;
 
+    // State 2: Cars red, pedestrians red
     case CAR_RED_PHASE:
-      digitalWrite(carGreen, LOW);
-      digitalWrite(carYellow, LOW);
       digitalWrite(carRed, HIGH);
-      digitalWrite(pedGreen, LOW);
-      digitalWrite(pedRed, HIGH);
+      digitalWrite(carYellow, LOW);
+      digitalWrite(carGreen, LOW);
 
-      if (currentMillis - previousMillis >= 3000) {
+      digitalWrite(pedRed, HIGH);
+      digitalWrite(pedGreen, LOW);
+
+      if (currentMillis - previousMillis >= redTime) {
         previousMillis = currentMillis;
 
         if (pedestrianRequested) {
@@ -109,14 +130,16 @@ void loop() {
       }
       break;
 
+    // State 3: Pedestrians green for 5 seconds
     case PEDESTRIAN_CROSSING:
-      digitalWrite(carGreen, LOW);
-      digitalWrite(carYellow, LOW);
       digitalWrite(carRed, HIGH);
-      digitalWrite(pedGreen, HIGH);
-      digitalWrite(pedRed, LOW);
+      digitalWrite(carYellow, LOW);
+      digitalWrite(carGreen, LOW);
 
-      if (currentMillis - previousMillis >= 5000) {
+      digitalWrite(pedRed, LOW);
+      digitalWrite(pedGreen, HIGH);
+
+      if (currentMillis - previousMillis >= crossingTime) {
         previousMillis = currentMillis;
         currentState = CAR_GREEN_WAIT;
       }
