@@ -5,14 +5,23 @@ const int carGreen = 11;
 
 const int pedRed = 10;
 const int pedGreen = 9;
-
 const int pedButton = 2;
 
+// Timing
+const unsigned long greenTime = 10000;
+const unsigned long yellowTime = 3000;
+const unsigned long redTime = 5000;
+const unsigned long safetyTime = 2000;
+const unsigned long crossingTime = 5000;
+
+// States
 enum TrafficState {
   CAR_GREEN_WAIT,
   CAR_YELLOW_PHASE,
   CAR_RED_PHASE,
-  PEDESTRIAN_CROSSING
+  SAFETY_BEFORE,
+  PEDESTRIAN_CROSSING,
+  SAFETY_AFTER
 };
 
 TrafficState currentState = CAR_GREEN_WAIT;
@@ -33,8 +42,14 @@ void setup() {
 
   pinMode(pedRed, OUTPUT);
   pinMode(pedGreen, OUTPUT);
-
   pinMode(pedButton, INPUT_PULLUP);
+
+  digitalWrite(carRed, LOW);
+  digitalWrite(carYellow, LOW);
+  digitalWrite(carGreen, HIGH);
+
+  digitalWrite(pedRed, HIGH);
+  digitalWrite(pedGreen, LOW);
 
   previousMillis = millis();
 }
@@ -42,7 +57,7 @@ void setup() {
 void loop() {
   unsigned long currentMillis = millis();
 
-  // Detect a new button press
+  // Button debounce
   bool reading = digitalRead(pedButton);
 
   if (reading != lastButtonReading) {
@@ -54,7 +69,8 @@ void loop() {
       stableButtonState = reading;
 
       if (stableButtonState == LOW &&
-          currentState != PEDESTRIAN_CROSSING) {
+          currentState != PEDESTRIAN_CROSSING &&
+          currentState != SAFETY_AFTER) {
         pedestrianRequested = true;
       }
     }
@@ -65,58 +81,84 @@ void loop() {
   switch (currentState) {
 
     case CAR_GREEN_WAIT:
-      digitalWrite(carGreen, HIGH);
-      digitalWrite(carYellow, LOW);
       digitalWrite(carRed, LOW);
-      digitalWrite(pedGreen, LOW);
+      digitalWrite(carYellow, LOW);
+      digitalWrite(carGreen, HIGH);
       digitalWrite(pedRed, HIGH);
+      digitalWrite(pedGreen, LOW);
 
-      if (currentMillis - previousMillis >= 5000) {
+      if (currentMillis - previousMillis >= greenTime) {
         previousMillis = currentMillis;
         currentState = CAR_YELLOW_PHASE;
       }
       break;
 
     case CAR_YELLOW_PHASE:
-      digitalWrite(carGreen, LOW);
-      digitalWrite(carYellow, HIGH);
       digitalWrite(carRed, LOW);
-      digitalWrite(pedGreen, LOW);
+      digitalWrite(carYellow, HIGH);
+      digitalWrite(carGreen, LOW);
       digitalWrite(pedRed, HIGH);
+      digitalWrite(pedGreen, LOW);
 
-      if (currentMillis - previousMillis >= 2000) {
+      if (currentMillis - previousMillis >= yellowTime) {
         previousMillis = currentMillis;
         currentState = CAR_RED_PHASE;
       }
       break;
 
     case CAR_RED_PHASE:
-      digitalWrite(carGreen, LOW);
-      digitalWrite(carYellow, LOW);
       digitalWrite(carRed, HIGH);
-      digitalWrite(pedGreen, LOW);
+      digitalWrite(carYellow, LOW);
+      digitalWrite(carGreen, LOW);
       digitalWrite(pedRed, HIGH);
+      digitalWrite(pedGreen, LOW);
 
-      if (currentMillis - previousMillis >= 3000) {
+      if (currentMillis - previousMillis >= redTime) {
         previousMillis = currentMillis;
 
         if (pedestrianRequested) {
           pedestrianRequested = false;
-          currentState = PEDESTRIAN_CROSSING;
+          currentState = SAFETY_BEFORE;
         } else {
           currentState = CAR_GREEN_WAIT;
         }
       }
       break;
 
-    case PEDESTRIAN_CROSSING:
-      digitalWrite(carGreen, LOW);
-      digitalWrite(carYellow, LOW);
+    case SAFETY_BEFORE:
       digitalWrite(carRed, HIGH);
-      digitalWrite(pedGreen, HIGH);
-      digitalWrite(pedRed, LOW);
+      digitalWrite(carYellow, LOW);
+      digitalWrite(carGreen, LOW);
+      digitalWrite(pedRed, HIGH);
+      digitalWrite(pedGreen, LOW);
 
-      if (currentMillis - previousMillis >= 5000) {
+      if (currentMillis - previousMillis >= safetyTime) {
+        previousMillis = currentMillis;
+        currentState = PEDESTRIAN_CROSSING;
+      }
+      break;
+
+    case PEDESTRIAN_CROSSING:
+      digitalWrite(carRed, HIGH);
+      digitalWrite(carYellow, LOW);
+      digitalWrite(carGreen, LOW);
+      digitalWrite(pedRed, LOW);
+      digitalWrite(pedGreen, HIGH);
+
+      if (currentMillis - previousMillis >= crossingTime) {
+        previousMillis = currentMillis;
+        currentState = SAFETY_AFTER;
+      }
+      break;
+
+    case SAFETY_AFTER:
+      digitalWrite(carRed, HIGH);
+      digitalWrite(carYellow, LOW);
+      digitalWrite(carGreen, LOW);
+      digitalWrite(pedRed, HIGH);
+      digitalWrite(pedGreen, LOW);
+
+      if (currentMillis - previousMillis >= safetyTime) {
         previousMillis = currentMillis;
         currentState = CAR_GREEN_WAIT;
       }
